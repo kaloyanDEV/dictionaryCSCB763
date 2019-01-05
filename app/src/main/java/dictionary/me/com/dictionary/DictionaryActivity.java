@@ -24,9 +24,19 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -34,6 +44,11 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class DictionaryActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+
+    private static final String REMOVE_ME = "https://glosbe.com/gapi/translate?from=eng&dest=bg&format=json&tm=false&page=1";
+
+    private static final Pattern jsonPattern = Pattern.compile(":\\[\\{\\\"phrase\\\":\\{\\\"text\\\":\\\"", java.util.regex.Pattern.CASE_INSENSITIVE);
+
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -50,7 +65,7 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private TranslateTask mAuthTask = null;
+    private TranslateTask mTranslateTask = null;
 
     // UI references.
     private AutoCompleteTextView mWordView;
@@ -142,7 +157,7 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
+        if (mTranslateTask != null) {
             return;
         }
 
@@ -187,8 +202,18 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
             // perform the user login attempt.
             showProgress(true);
             //mAuthTask = new UserLoginTask(email, password);
-            mAuthTask = new TranslateTask(word, null);
-            mAuthTask.execute((Void) null);
+            //mAuthTask = new TranslateTask(word, null);
+            //mAuthTask.execute((Void) null);
+
+
+            System.out.println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT ------------------------------------- " + word);
+
+            mTranslateTask = new TranslateTask(word);
+            mTranslateTask.execute((Void) null);
+
+
+            //showProgress(false);
+
         }
     }
 
@@ -294,49 +319,74 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
+     * search for :\[\{\"phrase\":\{\"text\":\" in json representation and try to extract translation
+     *
+     * @param input - json payload returned by https://glosbe.com
+     * @return
+     */
+    private String extractWord(String input) {
+        java.util.regex.Matcher m = jsonPattern.matcher(input);
+
+        if (m.find()) {
+            String substring = input.substring(m.end(0));
+
+            String translation = substring.substring(0, substring.indexOf("\"", 0));
+
+            return translation;
+        } else {
+            throw new IllegalArgumentException("Word not matched!");
+        }
+    }
+
+
+    /**
+     * Represents an asynchronous network task.
      */
     public class TranslateTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+        private final String mWord;
 
-        TranslateTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        TranslateTask(String email) {
+            mWord = email;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
+
+            HttpURLConnection urlConnection = null;
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                URL url = new URL(REMOVE_ME + "&phrase=" + mWord);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+
+                BufferedReader r = new BufferedReader(new InputStreamReader(in));
+                StringBuilder total = new StringBuilder();
+                for (String line; (line = r.readLine()) != null; ) {
+                    total.append(line).append('\n');
                 }
+
+                System.out.println(extractWord(total.toString()));
+                //readStream(in);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            } finally {
+                urlConnection.disconnect();
             }
 
-            // TODO: register the new account here.
+
             return true;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
+            mTranslateTask = null;
             showProgress(false);
 
             if (success) {
-                finish();
+                //finish();
             } else {
                 //mPasswordView.setError(getString(R.string.error_incorrect_password));
                 //mPasswordView.requestFocus();
@@ -345,7 +395,7 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
 
         @Override
         protected void onCancelled() {
-            mAuthTask = null;
+            mTranslateTask = null;
             showProgress(false);
         }
     }

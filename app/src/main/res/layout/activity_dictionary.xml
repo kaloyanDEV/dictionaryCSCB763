@@ -20,6 +20,7 @@
         android:layout_marginBottom="8dp"
         android:visibility="gone" />
 
+
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
@@ -73,6 +74,12 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/action_translate"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
 
         </LinearLayout>
     </ScrollView>
