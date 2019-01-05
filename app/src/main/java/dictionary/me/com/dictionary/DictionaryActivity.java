@@ -24,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -73,6 +74,8 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
     private View mProgressView;
     private View mLoginFormView;
 
+    private TextView translationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +108,8 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        translationView = (TextView) findViewById(R.id.translation);
     }
 
     private void populateAutoComplete() {
@@ -367,8 +372,12 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
                     total.append(line).append('\n');
                 }
 
-                System.out.println(extractWord(total.toString()));
-                //readStream(in);
+                String translation = extractWord(total.toString());
+
+                System.out.println(translation);
+
+                translationView.setText(translation);
+
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
