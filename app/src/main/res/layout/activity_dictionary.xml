@@ -66,20 +66,28 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <!--style="?android:textAppearanceSmall"-->
+
             <Button
-                android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
+                android:id="@+id/translate_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_translate"
-                android:textStyle="bold" />
+                android:text="@string/action_translate" />
 
             <TextView
                 android:id="@+id/translation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="" />
+
+
+            <Button
+                android:id="@+id/add_new_word"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_add_new_word" />
 
         </LinearLayout>
     </ScrollView>

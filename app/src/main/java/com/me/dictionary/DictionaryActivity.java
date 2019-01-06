@@ -1,8 +1,9 @@
-package dictionary.me.com.dictionary;
+package com.me.dictionary;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -18,14 +19,16 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -36,18 +39,36 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
+
+import dictionary.me.com.dictionary.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
- * A login screen that offers login via email/password.
+ * A startup activity with translation functionality
  */
 public class DictionaryActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
-    private static final String REMOVE_ME = "https://glosbe.com/gapi/translate?from=eng&dest=bg&format=json&tm=false&page=1";
 
+    /**
+     * keys used for intent
+     */
+
+    public static final String SOURCE_LANG = DictionaryActivity.class.getPackage() + ".SOURCE_LANG";
+    public static final String TARGET_LANG = DictionaryActivity.class.getPackage() + ".TARGET_LANG";
+    public static final String WORD = DictionaryActivity.class.getPackage() + ".WORD";
+    public static final String TRANSLATION = DictionaryActivity.class.getPackage() + ".TRANSLATION";
+
+
+    /**
+     * api url
+     */
+    private static final String API_URL = "https://glosbe.com/gapi/translate?from=eng&dest=bg&format=json&tm=false&page=1";
+
+    /**
+     * pattern used to search
+     */
     private static final Pattern jsonPattern = Pattern.compile(":\\[\\{\\\"phrase\\\":\\{\\\"text\\\":\\\"", java.util.regex.Pattern.CASE_INSENSITIVE);
 
 
@@ -84,25 +105,11 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
         mWordView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
-        /*
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
-        */
-
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button mTranslateButton = (Button) findViewById(R.id.translate_button);
+        mTranslateButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptTranslate();
             }
         });
 
@@ -110,6 +117,49 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
         mProgressView = findViewById(R.id.login_progress);
 
         translationView = (TextView) findViewById(R.id.translation);
+
+
+        final Button mAddNewWordButton = (Button) findViewById(R.id.add_new_word);
+        mAddNewWordButton.setEnabled(false);
+
+        mAddNewWordButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DictionaryActivity.this, InsertActivity.class);
+                intent.putExtra(SOURCE_LANG, "en");
+                intent.putExtra(TARGET_LANG, "bg");
+                intent.putExtra(WORD, mWordView.getText().toString());
+                intent.putExtra(TRANSLATION, translationView.getText().toString());
+
+                startActivity(intent);
+
+            }
+        });
+
+        translationView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                final boolean isReady = translationView.getText().toString().length() > 3;
+
+                //modification of widget need to executed in main thread
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAddNewWordButton.setEnabled(isReady);
+                    }
+                });
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+
+
     }
 
     private void populateAutoComplete() {
@@ -157,11 +207,9 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
 
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Attempts to translate
      */
-    private void attemptLogin() {
+    private void attemptTranslate() {
         if (mTranslateTask != null) {
             return;
         }
@@ -226,11 +274,6 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
         //TODO: Replace this with your own logic
         //return email.contains("@");
         return word.length() > 0 && word.length() < 20;
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
     }
 
     /**
@@ -361,7 +404,7 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
 
             HttpURLConnection urlConnection = null;
             try {
-                URL url = new URL(REMOVE_ME + "&phrase=" + mWord);
+                URL url = new URL(API_URL + "&phrase=" + mWord);
                 urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
