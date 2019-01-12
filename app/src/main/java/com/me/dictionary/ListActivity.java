@@ -9,8 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import com.me.dictionary.adapter.WordAdapter;
 import com.me.dictionary.db.DictionaryDbHelper;
 import com.me.dictionary.db.DictionarySchema;
+import com.me.dictionary.model.Word;
 import com.me.dictionary.widgets.EndlessScrollListener;
 
 import java.util.ArrayList;
@@ -23,8 +25,8 @@ public class ListActivity extends AppCompatActivity {
 
 
     private SQLiteDatabase db;
-    private List<String> viewModel = new ArrayList<>();
-    private ArrayAdapter<String> adapter;
+    private ArrayList<Word> viewModel = new ArrayList<>();
+    private ArrayAdapter<Word> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class ListActivity extends AppCompatActivity {
                 new ArrayList<>(Arrays.asList(cursorToArray(cursor)))
         );
 
+        /*
         adapter =
                 new ArrayAdapter<String>(this,
                         android.R.layout.simple_list_item_1,
@@ -56,6 +59,10 @@ public class ListActivity extends AppCompatActivity {
                         //cursorToArray(cursor)
                         viewModel
                 );
+        */
+
+
+        adapter = new WordAdapter(this, viewModel);
 
 
         lvItems.setAdapter(adapter);
@@ -101,7 +108,7 @@ public class ListActivity extends AppCompatActivity {
 
         //adapter.addAll(cursorToArray(cursor));
 
-        String[] buff = cursorToArray(cursor);
+        Word[] buff = cursorToArray(cursor);
 
         for (int i = 0; i < buff.length; i++) {
             adapter.add(buff[i]);
@@ -113,14 +120,18 @@ public class ListActivity extends AppCompatActivity {
     }
 
 
-    private String[] cursorToArray(Cursor cursor) {
-        String id[] = new String[cursor.getCount()];
+    private Word[] cursorToArray(Cursor cursor) {
+        Word id[] = new Word[cursor.getCount()];
         System.out.println("LEEEEEEEEEEEENGTH " + id.length);
         int i = 0;
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
-                id[i] = cursor.getString(cursor.getColumnIndex(DictionarySchema.WordTranslation.COLUMN_NAME_EN));
+                //cursor.getString(cursor.getColumnIndex(DictionarySchema.WordTranslation.COLUMN_NAME_EN))
+                Word word = new Word();
+                word.en = cursor.getString(cursor.getColumnIndex(DictionarySchema.WordTranslation.COLUMN_NAME_EN));
+                word.bg = cursor.getString(cursor.getColumnIndex(DictionarySchema.WordTranslation.COLUMN_NAME_BG));
+                id[i] = word;
                 i++;
             } while (cursor.moveToNext());
             cursor.close();
