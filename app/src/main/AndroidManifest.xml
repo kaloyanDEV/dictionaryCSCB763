@@ -26,7 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.me.dictionary.InsertActivity"></activity>
+        <activity android:name="com.me.dictionary.InsertActivity" />
+        <activity android:name="com.me.dictionary.ListActivity"></activity>
     </application>
 
 </manifest>

@@ -160,6 +160,17 @@ public class DictionaryActivity extends AppCompatActivity implements LoaderCallb
         });
 
 
+        final Button mViewAllWordsButton = (Button) findViewById(R.id.view_all_words);
+
+        mViewAllWordsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DictionaryActivity.this, ListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 
     private void populateAutoComplete() {

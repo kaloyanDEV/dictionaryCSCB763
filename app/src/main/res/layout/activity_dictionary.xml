@@ -89,6 +89,13 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/action_add_new_word" />
 
+            <Button
+                android:id="@+id/view_all_words"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_view_all_words" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
