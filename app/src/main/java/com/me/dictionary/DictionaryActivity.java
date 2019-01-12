@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.regex.Pattern;
+
 import dictionary.me.com.dictionary.R;
 
 
@@ -291,10 +292,17 @@ public class DictionaryActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
-            }catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-                Toast.makeText(DictionaryActivity.this, "Not existing word!",
-                        Toast.LENGTH_LONG).show();
+
+                DictionaryActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(DictionaryActivity.this, "Думата не съществува!",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+
                 return false;
             } finally {
                 urlConnection.disconnect();
@@ -309,9 +317,12 @@ public class DictionaryActivity extends AppCompatActivity {
             mTranslateTask = null;
             showProgress(false);
 
+            final Button mAddNewWordButton = (Button) findViewById(R.id.add_new_word);
             if (success) {
                 //finish();
+                mAddNewWordButton.setEnabled(true);
             } else {
+                mAddNewWordButton.setEnabled(false);
                 //TODO show error message
             }
         }

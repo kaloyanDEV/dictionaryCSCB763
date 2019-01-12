@@ -11,16 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.me.dictionary.db.DictionaryDbHelper;
 import com.me.dictionary.db.DictionarySchema;
-
-import java.util.Dictionary;
-
 import dictionary.me.com.dictionary.R;
 
 /**
- * insert word activity
+ * provides functionality to insert or update new translation in local database
  */
 public class InsertActivity extends AppCompatActivity {
 
@@ -92,24 +88,24 @@ public class InsertActivity extends AppCompatActivity {
 
                         System.out.println("BLA " + newRowId);
 
-                        Toast.makeText(InsertActivity.this, "Word: \"" + intent.getStringExtra(DictionaryActivity.WORD) + "\" successfully INSERTED",
+                        Toast.makeText(InsertActivity.this, "Думата: \"" + intent.getStringExtra(DictionaryActivity.WORD) + "\" успешно запазена.",
                                 Toast.LENGTH_LONG).show();
 
 
                     } else if (cursor.getCount() == 1) {
 
-                        Toast.makeText(InsertActivity.this, "Word: \"" + intent.getStringExtra(DictionaryActivity.WORD) + "\" successfully UPDATED",
+                        Toast.makeText(InsertActivity.this, "Думата: \"" + intent.getStringExtra(DictionaryActivity.WORD) + "\" успешно обновена.",
                                 Toast.LENGTH_LONG).show();
 
                     } else {
-                        Toast.makeText(InsertActivity.this, "Something is messed up with DB SCHEMA!",
+                        Toast.makeText(InsertActivity.this, "Проблем със схемата!",
                                 Toast.LENGTH_LONG).show();
                     }
 
 
                 } catch (SQLiteException e) {
                     e.printStackTrace();
-                    Toast.makeText(InsertActivity.this, "There is problem with database!",
+                    Toast.makeText(InsertActivity.this, "Има проблем с бозата данни!",
                             Toast.LENGTH_LONG).show();
                 }
             }
