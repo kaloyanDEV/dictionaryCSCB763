@@ -72,6 +72,9 @@ public class ListActivity extends AppCompatActivity {
         lvItems.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
+
+                System.out.println("PAGE: " + page + " TOTAL ITEMS COUNT: " + adapter.getCount());
+
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to your AdapterView
                 loadNextDataFromApi(page);
@@ -92,14 +95,16 @@ public class ListActivity extends AppCompatActivity {
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyDataSetChanged()`
 
-        System.out.println("KKKKKKKKKKKKKKKKKKKKKKKKK " + offset);
+        System.out.println("KKKKKKKKKKKKKKKKKKKKKKKKK " + offset + " " + adapter.getCount());
 
+
+        int newOffset = offset + adapter.getCount();
 
         Cursor cursor = db.rawQuery("SELECT * " +
                 //DictionarySchema.WordTranslation.COLUMN_NAME_BG +
                 " FROM " +
                 DictionarySchema.WordTranslation.TABLE_NAME +
-                " LIMIT ? OFFSET ?", new String[]{"5", String.valueOf(offset)});
+                " LIMIT ? OFFSET ?", new String[]{"5", String.valueOf(adapter.getCount())});
 
 
         //viewModel.addAll(
@@ -122,7 +127,7 @@ public class ListActivity extends AppCompatActivity {
 
     private Word[] cursorToArray(Cursor cursor) {
         Word id[] = new Word[cursor.getCount()];
-        System.out.println("LEEEEEEEEEEEENGTH " + id.length);
+        //System.out.println("LEEEEEEEEEEEENGTH " + id.length);
         int i = 0;
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
