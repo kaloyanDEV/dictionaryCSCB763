@@ -283,11 +283,16 @@ public class DictionaryActivity extends AppCompatActivity {
                     total.append(line).append('\n');
                 }
 
-                String translation = extractWord(total.toString());
+                final String translation = extractWord(total.toString());
 
                 System.out.println(translation);
-
-                translationView.setText(translation);
+                
+                DictionaryActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        translationView.setText(translation);
+                    }
+                });
 
             } catch (IOException e) {
                 e.printStackTrace();
