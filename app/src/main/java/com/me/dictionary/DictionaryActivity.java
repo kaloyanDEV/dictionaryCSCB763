@@ -286,7 +286,7 @@ public class DictionaryActivity extends AppCompatActivity {
                 final String translation = extractWord(total.toString());
 
                 System.out.println(translation);
-                
+
                 DictionaryActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
