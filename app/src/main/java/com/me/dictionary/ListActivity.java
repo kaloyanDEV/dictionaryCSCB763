@@ -23,8 +23,12 @@ import dictionary.me.com.dictionary.R;
  */
 public class ListActivity extends AppCompatActivity {
 
+    private static String ITEMS = "items";
 
     private SQLiteDatabase db;
+    /**
+     * needed so we have reference to model data
+     */
     private ArrayList<Word> viewModel = new ArrayList<>();
     private ArrayAdapter<Word> adapter;
 
@@ -32,22 +36,33 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        ListView lvItems = (ListView) findViewById(R.id.list);
+        ListView lvItems = findViewById(R.id.list);
 
 
         final DictionaryDbHelper mDbHelper = new DictionaryDbHelper(this);
         db = mDbHelper.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * " +
-                //DictionarySchema.WordTranslation.COLUMN_NAME_BG +
-                " FROM " +
-                DictionarySchema.WordTranslation.TABLE_NAME +
-                " LIMIT ? OFFSET ?", new String[]{"5", "0"});
+
+        if (savedInstanceState == null) {
+
+            //System.out.println("NOOOOOOOOOOOOOOOT: ");
+
+            Cursor cursor = db.rawQuery("SELECT * " +
+                    //DictionarySchema.WordTranslation.COLUMN_NAME_BG +
+                    " FROM " +
+                    DictionarySchema.WordTranslation.TABLE_NAME +
+                    " LIMIT ? OFFSET ?", new String[]{"5", "0"});
 
 
-        viewModel.addAll(
-                new ArrayList<>(Arrays.asList(cursorToArray(cursor)))
-        );
+            viewModel.addAll(
+                    new ArrayList<>(Arrays.asList(cursorToArray(cursor)))
+            );
+        } else {
+
+            //System.out.println("SAAAAAAAAAAAAAAAAVED: ");
+
+            viewModel = savedInstanceState.getParcelableArrayList(ITEMS);
+        }
 
 
         adapter = new WordAdapter(this, viewModel);
@@ -117,4 +132,17 @@ public class ListActivity extends AppCompatActivity {
 
         return id;
     }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedState) {
+
+        super.onSaveInstanceState(savedState);
+
+        //System.out.println("ITEAAAMS: " + viewModel.size());
+
+        savedState.putParcelableArrayList(ITEMS, viewModel);
+
+    }
+
 }

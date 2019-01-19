@@ -3,6 +3,7 @@ package com.me.dictionary;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +15,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AutoCompleteTextView;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -64,7 +65,7 @@ public class DictionaryActivity extends AppCompatActivity {
 
     private static final Pattern wordPattern = Pattern.compile("^[a-z]+$");
 
-    
+
     private TranslateTask mTranslateTask = null;
 
     // UI references.
@@ -321,7 +322,7 @@ public class DictionaryActivity extends AppCompatActivity {
             mTranslateTask = null;
             showProgress(false);
 
-            final Button mAddNewWordButton = (Button) findViewById(R.id.add_new_word);
+            final Button mAddNewWordButton = findViewById(R.id.add_new_word);
             if (success) {
                 //finish();
                 mAddNewWordButton.setEnabled(true);
@@ -345,12 +346,23 @@ public class DictionaryActivity extends AppCompatActivity {
 
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+            hideKeyboard(this);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            //could happen something
         }
     }
 
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
 
 }
