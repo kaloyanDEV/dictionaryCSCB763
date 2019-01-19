@@ -1,10 +1,22 @@
 <resources>
+
+    <!-- MENU -->
     <string name="app_name">Английско-български речник</string>
     <string name="prompt_word">Моля, въведете дума.</string>
     <string name="action_translate">Преведи</string>
     <string name="action_add_new_word">Запази в списък</string>
     <string name="action_view_all_words">Списък</string>
+    <string name="action_insert_word">Добави</string>
+
+    <!-- MESSAGES -->
+    <string name="error_word_not_matched">Не е намерена дума.</string>
     <string name="error_invalid_word">Думата е невалидна.</string>
     <string name="error_field_required">Полето е задължително.</string>
-    <string name="action_insert_word">Добави</string>
+    <string name="error_db_schema">Проблем със схемата.</string>
+    <string name="error_db">Проблем с бозата данни.</string>
+    <string name="insert_word_successful">Думата: %1$s успешно запазена.</string>
+    <string name="update_word_successful">Думата: %1$s успешно обновена.</string>
+
+
+
 </resources>

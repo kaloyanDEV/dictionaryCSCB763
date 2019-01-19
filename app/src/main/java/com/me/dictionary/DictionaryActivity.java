@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,14 +64,11 @@ public class DictionaryActivity extends AppCompatActivity {
 
     private static final Pattern wordPattern = Pattern.compile("^[a-z]+$");
 
-
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
+    
     private TranslateTask mTranslateTask = null;
 
     // UI references.
-    private AutoCompleteTextView mWordView;
+    private EditText mWordView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -80,9 +79,9 @@ public class DictionaryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dictionary);
         // Set up the login form.
-        mWordView = (AutoCompleteTextView) findViewById(R.id.email);
+        mWordView = findViewById(R.id.word_input);
 
-        Button mTranslateButton = (Button) findViewById(R.id.translate_button);
+        Button mTranslateButton = findViewById(R.id.translate_button);
         mTranslateButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,13 +89,13 @@ public class DictionaryActivity extends AppCompatActivity {
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+        mLoginFormView = findViewById(R.id.translate_form);
+        mProgressView = findViewById(R.id.translate_progress);
 
-        translationView = (TextView) findViewById(R.id.translation);
+        translationView = findViewById(R.id.translation);
 
 
-        final Button mAddNewWordButton = (Button) findViewById(R.id.add_new_word);
+        final Button mAddNewWordButton = findViewById(R.id.add_new_word);
         mAddNewWordButton.setEnabled(false);
 
         mAddNewWordButton.setOnClickListener(new OnClickListener() {
@@ -137,7 +136,7 @@ public class DictionaryActivity extends AppCompatActivity {
         });
 
 
-        final Button mViewAllWordsButton = (Button) findViewById(R.id.view_all_words);
+        final Button mViewAllWordsButton = findViewById(R.id.view_all_words);
 
         mViewAllWordsButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -250,7 +249,7 @@ public class DictionaryActivity extends AppCompatActivity {
 
             return translation;
         } else {
-            throw new IllegalArgumentException("Word not matched!");
+            throw new IllegalArgumentException(getString(R.string.error_word_not_matched));
         }
     }
 
@@ -338,5 +337,21 @@ public class DictionaryActivity extends AppCompatActivity {
             showProgress(false);
         }
     }
+
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 }
 

@@ -11,8 +11,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.me.dictionary.db.DictionaryDbHelper;
 import com.me.dictionary.db.DictionarySchema;
+
 import dictionary.me.com.dictionary.R;
 
 /**
@@ -86,26 +88,28 @@ public class InsertActivity extends AppCompatActivity {
                         // Insert the new row, returning the primary key value of the new row
                         long newRowId = db.insert(DictionarySchema.WordTranslation.TABLE_NAME, null, values);
 
-                        System.out.println("BLA " + newRowId);
+                        //System.out.println("BLA " + newRowId);
 
-                        Toast.makeText(InsertActivity.this, "Думата: \"" + intent.getStringExtra(DictionaryActivity.WORD) + "\" успешно запазена.",
+                        Toast.makeText(InsertActivity.this,
+                                String.format(getString(R.string.insert_word_successful), intent.getStringExtra(DictionaryActivity.WORD)),
                                 Toast.LENGTH_LONG).show();
 
 
                     } else if (cursor.getCount() == 1) {
 
-                        Toast.makeText(InsertActivity.this, "Думата: \"" + intent.getStringExtra(DictionaryActivity.WORD) + "\" успешно обновена.",
+                        Toast.makeText(InsertActivity.this,
+                                String.format(getString(R.string.update_word_successful), intent.getStringExtra(DictionaryActivity.WORD)),
                                 Toast.LENGTH_LONG).show();
 
                     } else {
-                        Toast.makeText(InsertActivity.this, "Проблем със схемата!",
+                        Toast.makeText(InsertActivity.this, getString(R.string.error_db_schema),
                                 Toast.LENGTH_LONG).show();
                     }
 
 
                 } catch (SQLiteException e) {
                     e.printStackTrace();
-                    Toast.makeText(InsertActivity.this, "Има проблем с бозата данни!",
+                    Toast.makeText(InsertActivity.this, getString(R.string.error_db),
                             Toast.LENGTH_LONG).show();
                 }
             }

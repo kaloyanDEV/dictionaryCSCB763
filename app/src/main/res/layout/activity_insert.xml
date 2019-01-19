@@ -16,7 +16,6 @@
             android:id="@+id/new_word_preview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello, I am a TextView"
             android:textSize="25dp"/>
 
         <Button
